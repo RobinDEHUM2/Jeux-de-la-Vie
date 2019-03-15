@@ -3,13 +3,13 @@
     <h4>Dimensions :</h4>
     <div>
       <label>Hauteur :</label>
-      <input class="dimInput" type="number" v-model="height" />
+      <input class="dimInput" type="number" v-model="selectedHeight" />
     </div>
     <div>
       <label>Largeur :</label>
-      <input class="dimInput" type="number" v-model="width" />
+      <input class="dimInput" type="number" v-model="selectedWidth" />
     </div>
-    <button v-on:click="resize">redimensionner</button>
+    <button v-on:click="resizeWindow">redimensionner</button>
     <h4>Motif :</h4>
     <vSelect
       class="design-select"
@@ -17,60 +17,52 @@
       :options="modelOptions"
     ></vSelect>
     <h4>Actions :</h4>
-    <button v-on:click="reset">reset</button><br />
-    <button v-if="hasStarted" v-on:click="stop">stop</button>
-    <button v-else v-on:click="start">start</button>
+    <button v-on:click="resetBoard">reset</button><br />
+    <button v-if="hasStarted" v-on:click="stopGame">stop</button>
+    <button v-else v-on:click="startGame">start</button>
   </div>
 </template>
 
 <script>
 import vSelect from "vue-select";
+import { mapState, mapActions } from "vuex";
+
 export default {
   name: "SidePannel",
   components: {
     vSelect
   },
-  props: {
-    height: {
-      type: Number,
-      required: true
-    },
-    width: {
-      type: Number,
-      required: true
-    },
-    hasStarted: {
-      type: Boolean,
-      required: true
-    },
-    modelSelected: {
-      type: String,
-      required: true
-    },
-    modelOptions: {
-      type: Array,
-      required: true
-    }
+  computed: {
+    ...mapState(["hasStarted", "modelOptions"])
   },
   data() {
-    return {};
+    return {
+      modelSelected: null,
+      selectedHeight: 100,
+      selectedWidth: 100
+    };
   },
   methods: {
-    resize() {
-      console.log(`resize : ${this.height}, ${this.width}`);
+    ...mapActions(["resize", "reset", "start", "stop"]),
+    resizeWindow() {
+      console.log(`resize : ${this.selectedHeight}, ${this.selectedWidth}`);
+      this.resize(this.selectedHeight, this.selectedWidth);
     },
-    reset() {
+    resetBoard() {
       console.log(
-        `reset: ${this.height}, ${this.width} , ${this.modelSelected}`
+        `reset: ${this.selectedHeight}, ${this.selectedWidth} , ${
+          this.modelSelected
+        }`
       );
+      this.reset(this.selectedHeight, this.selectedWidth, this.modelSelected);
     },
-    start() {
+    startGame() {
       console.log("start");
-      this.hasStarted = true;
+      this.start();
     },
-    stop() {
+    stopGame() {
       console.log("stop");
-      this.hasStarted = false;
+      this.stop();
     }
   }
 };

@@ -6,7 +6,7 @@
         <td
           v-for="(cell, cIndex) in line"
           :key="cIndex"
-          v-bind:class="{ white: cell, black: !cell }"
+          v-bind:class="{ white: !cell, black: cell }"
         ></td>
       </tr>
     </table>
@@ -14,12 +14,11 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
   name: "Board",
-  data() {
-    return {
-      board: [[1, 1, 0, 0], [0, 0, 1, 1], [1, 0, 0, 0], [0, 0, 1, 0]]
-    };
+  computed: {
+    ...mapState(["board"])
   }
 };
 </script>

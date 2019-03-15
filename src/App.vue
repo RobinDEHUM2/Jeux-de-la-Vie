@@ -1,13 +1,6 @@
 <template>
   <div id="app">
-    <SidePannel
-      class="sidePannel"
-      v-bind:height="100"
-      v-bind:width="100"
-      v-bind:hasStarted="true"
-      v-bind:modelSelected="empty"
-      v-bind:modelOptions="['empty', 'foo', 'bar']"
-    />
+    <SidePannel class="sidePannel" />
     <Board class="mainBoard" />
   </div>
 </template>
