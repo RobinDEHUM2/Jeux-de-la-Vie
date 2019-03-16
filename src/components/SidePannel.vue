@@ -1,14 +1,11 @@
 <template>
   <div>
     <h4>Dimensions :</h4>
-    <div>
-      <label>Hauteur :</label>
-      <input class="dimInput" type="number" v-model="selectedHeight" />
-    </div>
-    <div>
-      <label>Largeur :</label>
-      <input class="dimInput" type="number" v-model="selectedWidth" />
-    </div>
+    <label>Hauteur :</label>
+    <input class="dimInput" type="number" v-model="selectedHeight" />
+    <br />
+    <label>Largeur :</label>
+    <input class="dimInput" type="number" v-model="selectedWidth" />
     <button v-on:click="resizeWindow">redimensionner</button>
     <h4>Motif :</h4>
     <vSelect
@@ -16,8 +13,8 @@
       v-model="modelSelected"
       :options="modelOptions"
     ></vSelect>
+    <button v-on:click="resetBoard">mettre à jour</button>
     <h4>Actions :</h4>
-    <button v-on:click="resetBoard">reset</button><br />
     <button v-if="hasStarted" v-on:click="stopGame">stop</button>
     <button v-else v-on:click="startGame">start</button>
   </div>
@@ -54,7 +51,7 @@ export default {
           this.modelSelected
         }`
       );
-      this.reset(this.selectedHeight, this.selectedWidth, this.modelSelected);
+      this.reset(this.modelSelected);
     },
     startGame() {
       console.log("start");

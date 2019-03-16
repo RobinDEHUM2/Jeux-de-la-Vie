@@ -4,14 +4,13 @@
   "private": true,
   "main": "main",
   "scripts": {
-    "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test:unit": "vue-cli-service test:unit",
-    "start": "vue-cli-service build; electron .",
-    "electron": "electron ."
+    "start": "vue-cli-service build; electron ."
   },
   "dependencies": {
+    "electron": "^4.1.0",
     "vue": "^2.6.6",
     "vue-select": "^2.6.0",
     "vuex": "^3.0.1"
@@ -26,7 +25,7 @@
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "^10.0.1",
     "babel-jest": "^23.6.0",
-    "electron": "^4.1.0",
+    "electromon": "^1.0.10",
     "eslint": "^5.8.0",
     "eslint-plugin-vue": "^5.0.0",
     "vue-template-compiler": "^2.5.21"

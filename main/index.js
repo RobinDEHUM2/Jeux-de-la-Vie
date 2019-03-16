@@ -1,5 +1,7 @@
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, ipcMain: ipc } = require("electron");
 const path = require("path");
+
+const controller = require("./controller");
 
 let win;
 
@@ -12,6 +14,8 @@ function createWindow() {
     win = null;
   });
 }
+
+controller(ipc);
 
 app.on("ready", createWindow);
 
