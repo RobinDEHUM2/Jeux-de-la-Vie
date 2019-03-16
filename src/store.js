@@ -19,8 +19,8 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    resize({ commit }, height, width) {},
-    reset({ commit }, height, width, model) {
+    resize() {},
+    reset({ commit }) {
       let newBoard = [
         [1, 0, 0, 1, 1, 1],
         [1, 0, 0, 1, 1, 1],
@@ -33,7 +33,9 @@ export default new Vuex.Store({
       ];
       commit("CHANGE_BOARD", newBoard);
     },
-    start({ commit }) {},
-    stop({ commit }) {}
+    start() {},
+    stop() {}
   }
 });
+
+//{ commit }, height, width, model
