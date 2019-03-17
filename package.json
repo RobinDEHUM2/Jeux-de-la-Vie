@@ -7,7 +7,8 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test:unit": "vue-cli-service test:unit",
-    "start": "vue-cli-service build; electron ."
+    "start": "vue-cli-service build; electron .",
+    "electron": "electron ."
   },
   "dependencies": {
     "electron": "^4.1.0",

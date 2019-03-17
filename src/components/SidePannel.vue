@@ -12,8 +12,8 @@
       class="design-select"
       v-model="modelSelected"
       :options="modelOptions"
+      @change="resetBoard"
     ></vSelect>
-    <button v-on:click="resetBoard">mettre à jour</button>
     <h4>Actions :</h4>
     <button v-if="hasStarted" v-on:click="stopGame">stop</button>
     <button v-else v-on:click="startGame">start</button>
@@ -41,24 +41,20 @@ export default {
   },
   methods: {
     ...mapActions(["resize", "reset", "start", "stop"]),
+
     resizeWindow() {
-      console.log(`resize : ${this.selectedHeight}, ${this.selectedWidth}`);
-      this.resize(this.selectedHeight, this.selectedWidth);
+      this.resize({ width: this.selectedWidth, height: this.selectedHeight });
     },
+
     resetBoard() {
-      console.log(
-        `reset: ${this.selectedHeight}, ${this.selectedWidth} , ${
-          this.modelSelected
-        }`
-      );
       this.reset(this.modelSelected);
     },
+
     startGame() {
-      console.log("start");
       this.start();
     },
+
     stopGame() {
-      console.log("stop");
       this.stop();
     }
   }

@@ -1,21 +1,23 @@
-module.exports = ipc => {
-  ipc.on("RESIZE", (event, args) => {
-    console.log("RESIZE");
-    event.returnValue = [[]];
+module.exports = (ipc, patterns, gameOfLife) => {
+  ipc.on("RESIZE", (event, { width, height }) => {
+    gameOfLife.stop();
+    event.returnValue = gameOfLife.resize(width, height);
   });
 
-  ipc.on("RESET", (event, args) => {
-    console.log("RESET");
-    event.returnValue = [[]];
+  ipc.on("RESET", (event, pattern) => {
+    gameOfLife.stop();
+    event.returnValue = gameOfLife.init(patterns[pattern]);
   });
 
   ipc.on("START", event => {
-    console.log("START");
+    gameOfLife.start(board => {
+      event.sender.send("CHANGE_BOARD", board);
+    });
     event.returnValue = 1;
   });
 
   ipc.on("STOP", event => {
-    console.log("STOP");
+    gameOfLife.stop();
     event.returnValue = 1;
   });
 };

@@ -2,6 +2,10 @@ const { app, BrowserWindow, ipcMain: ipc } = require("electron");
 const path = require("path");
 
 const controller = require("./controller");
+const { golPatterns } = require("../golPatterns");
+const GameOfLife = require("./GameOfLife");
+
+const gameOfLife = new GameOfLife([[]]);
 
 let win;
 
@@ -15,7 +19,7 @@ function createWindow() {
   });
 }
 
-controller(ipc);
+controller(ipc, golPatterns, gameOfLife);
 
 app.on("ready", createWindow);
 

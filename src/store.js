@@ -13,16 +13,18 @@ const state = {
   modelOptions: patternNames
 };
 
-//resize, reset, start, and stop are synchronous to avoid side effect in back
+//resize, reset, and stop are synchronous to avoid side effect in back
 //changing board while the app is runing could lead to desastrous issues
 const actions = {
-  resize({ commit }, width, height) {
-    const newBoard = ipc.sendSync("RESIZE", width, height);
+  resize({ commit }, { width, height }) {
+    const newBoard = ipc.sendSync("RESIZE", { width, height });
+    commit("STOP");
     commit("CHANGE_BOARD", newBoard);
   },
 
   reset({ commit }, model) {
     const newBoard = ipc.sendSync("RESET", model);
+    commit("STOP");
     commit("CHANGE_BOARD", newBoard);
   },
 
@@ -57,8 +59,8 @@ const store = new Vuex.Store({
   actions
 });
 
-ipc.on("CHANGE_BOARD", () => {
-  store.commit("CHANGE_BOARD");
+ipc.on("CHANGE_BOARD", (_, board) => {
+  store.commit("CHANGE_BOARD", board);
 });
 
 export default store;
