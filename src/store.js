@@ -36,6 +36,10 @@ const actions = {
   stop({ commit }) {
     ipc.sendSync("STOP");
     commit("STOP");
+  },
+
+  updateSpeed(_, speed) {
+    ipc.send("UPDATE_SPEED", speed);
   }
 };
 

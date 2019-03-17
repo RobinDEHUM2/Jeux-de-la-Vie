@@ -20,4 +20,9 @@ module.exports = (ipc, patterns, gameOfLife) => {
     gameOfLife.stop();
     event.returnValue = 1;
   });
+
+  ipc.on("UPDATE_SPEED", (_, speed) => {
+    console.log("trying to change speed : ", speed);
+    gameOfLife.changeSpeed(speed);
+  });
 };

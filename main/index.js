@@ -1,3 +1,6 @@
+const config = require("../config.json");
+process.env = { ...process.env, ...config };
+
 const { app, BrowserWindow, ipcMain: ipc } = require("electron");
 const path = require("path");
 

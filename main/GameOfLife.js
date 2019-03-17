@@ -7,18 +7,26 @@
 module.exports = class GameOfLife {
   constructor(board = [[]]) {
     this.state = {
+      board: board,
       running: false,
-      speed: 100
+      stop: false,
+      speed: process.env.MAX_SPEED
     };
 
-    this.board = board;
-    this.interval;
+    this.onInterupt; //function(board)
   }
 
   init(board = [[]]) {
-    this.board = board;
+    this.state.board = board;
 
-    return this.board;
+    return this.state.board;
+  }
+
+  changeSpeed(speed) {
+    //just to make sure it can always work
+    speed = typeof speed === "number" && speed > 0 ? speed : 1;
+
+    this.state.speed = (process.env.MAX_SPEED * 100) / speed;
   }
 
   /**
@@ -28,55 +36,56 @@ module.exports = class GameOfLife {
    * @param  {Integer} [maxCycles]  maximum number of cycle allowed, if lower or equal to 0 ignored, app will run until
    * @param  {Function(Array<Array<Integer>>)} [onEnd]   callback triggered at the end
    */
-  start(onCycleEnd, maxCycles = 0) {
-    if (!this.state.runing) {
+  start(onCycleEnd) {
+    if (!this.state.running) {
       this.state.running = true;
-      let isLimited = maxCycles > 0;
 
-      if (maxCycles > 0) {
-        for (; maxCycles > 0; --maxCycles) {
-          setTimeout(this.run.bind(this), this.state.speed, onCycleEnd);
-        }
-      } else {
-        clearInterval(this.interval);
-        this.interval = setInterval(
-          this.run.bind(this),
-          this.state.speed,
-          onCycleEnd
-        );
-      }
+      this.run(onCycleEnd);
     }
   }
 
   run(onCycleEnd) {
-    this.board = this.newCycle(this.board);
+    if (!this.state.stop) {
+      this.state.board = this.newCycle(this.state.board);
 
-    if (onCycleEnd) {
-      onCycleEnd(this.board);
+      if (onCycleEnd) {
+        onCycleEnd(this.state.board);
+      }
+
+      setTimeout(this.run.bind(this), this.state.speed, onCycleEnd);
+    } else {
+      this.state.running = false;
+      this.state.stop = false;
+
+      if (this.onInterupt) {
+        this.onInterupt(this.state.board);
+      }
     }
   }
 
   /**
    * stop the game
-   * @param  {[type]} onEnd callback triggered at the end
+   * @param  {[type]} [onInterupt] callback triggered at the end
    */
-  stop(onEnd) {
-    clearInterval(this.interval);
-    this.state.runing = false;
+  stop(onInterupt) {
+    if (this.state.running) {
+      this.state.stop = true;
+      this.onInterupt = onInterupt;
+    }
   }
 
   resize(width, height) {
     if (width > 0 && height > 0) {
-      if (height <= this.board.length) {
-        this.board.length = height;
+      if (height <= this.state.board.length) {
+        this.state.board.length = height;
 
-        if (width <= this.board[0].length) {
-          this.board.forEach(line => {
+        if (width <= this.state.board[0].length) {
+          this.state.board.forEach(line => {
             line.length = width;
           });
         } else {
-          let start = this.board[0].length;
-          this.board.map(line => {
+          let start = this.state.board[0].length;
+          this.state.board.map(line => {
             line.length = width;
             line.fill(0, start, width);
 
@@ -84,13 +93,13 @@ module.exports = class GameOfLife {
           });
         }
       } else {
-        if (width <= this.board[0].length) {
-          this.board.forEach(line => {
+        if (width <= this.state.board[0].length) {
+          this.state.board.forEach(line => {
             line.length = width;
           });
         } else {
-          let start = this.board[0].length;
-          this.board.map(line => {
+          let start = this.state.board[0].length;
+          this.state.board.map(line => {
             line.length = width;
             line.fill(0, start, width);
 
@@ -98,15 +107,19 @@ module.exports = class GameOfLife {
           });
         }
 
-        let start = this.board.length;
-        this.board.length = height;
-        this.board.fill(Array.from({ length: width }, () => 0), start, height);
+        let start = this.state.board.length;
+        this.state.board.length = height;
+        this.state.board.fill(
+          Array.from({ length: width }, () => 0),
+          start,
+          height
+        );
       }
     } else {
-      this.board = [[]];
+      this.state.board = [[]];
     }
 
-    return this.board;
+    return this.state.board;
   }
 
   /**

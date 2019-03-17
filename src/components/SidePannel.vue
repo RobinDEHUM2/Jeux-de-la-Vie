@@ -1,5 +1,7 @@
 <template>
   <div>
+    <h4>Vitesse :</h4>
+    <vue-slider v-model="selectedSpeed" v-on:drag-end="changeSpeed" min="1" />
     <h4>Dimensions :</h4>
     <label>Hauteur :</label>
     <input class="dimInput" type="number" v-model="selectedHeight" />
@@ -22,12 +24,15 @@
 
 <script>
 import vSelect from "vue-select";
+import VueSlider from "vue-slider-component";
+import "vue-slider-component/theme/antd.css";
 import { mapState, mapActions } from "vuex";
 
 export default {
   name: "SidePannel",
   components: {
-    vSelect
+    vSelect,
+    VueSlider
   },
   computed: {
     ...mapState(["hasStarted", "modelOptions"])
@@ -35,12 +40,13 @@ export default {
   data() {
     return {
       modelSelected: null,
-      selectedHeight: 100,
-      selectedWidth: 100
+      selectedSpeed: 100,
+      selectedHeight: 20,
+      selectedWidth: 20
     };
   },
   methods: {
-    ...mapActions(["resize", "reset", "start", "stop"]),
+    ...mapActions(["resize", "reset", "start", "stop", "updateSpeed"]),
 
     resizeWindow() {
       this.resize({ width: this.selectedWidth, height: this.selectedHeight });
@@ -56,6 +62,10 @@ export default {
 
     stopGame() {
       this.stop();
+    },
+
+    changeSpeed() {
+      this.updateSpeed(this.selectedSpeed);
     }
   }
 };
