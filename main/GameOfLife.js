@@ -31,6 +31,18 @@ module.exports = class GameOfLife {
     return this.state.board;
   }
 
+  addPattern(pattern) {
+    if (!this.state.running || !pattern.board || !pattern.board[0]) {
+      this.state.board = pattern.board;
+      this.resize(this.state.board[0].length, this.state.board.length); //to make sure board is rectangular
+      this.state.patterns[pattern.name] = this.state.board;
+      console.log("pattern added");
+
+      return { name: pattern.name, board: this.state.board };
+    }
+    throw "not a valid pattern";
+  }
+
   changeSpeed(speed) {
     //just to make sure it can always work
     speed = typeof speed === "number" && speed > 0 ? speed : 1;

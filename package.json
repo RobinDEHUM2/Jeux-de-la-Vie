@@ -1,7 +1,8 @@
 {
   "name": "ankama-jeu-de-la-vie",
-  "version": "0.1.0",
-  "private": true,
+  "version": "1.0.0",
+  "licence": "DBAD",
+  "author": "Robin DEHU",
   "main": "main",
   "scripts": {
     "build": "vue-cli-service build",

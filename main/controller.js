@@ -1,4 +1,4 @@
-module.exports = (ipc, gameOfLife) => {
+module.exports = (ipc, gameOfLife, fileExplorer) => {
   ipc.on("RESIZE", async (event, { width, height }) => {
     console.log("ipc receive : RESIZE");
 
@@ -7,7 +7,7 @@ module.exports = (ipc, gameOfLife) => {
     event.returnValue = gameOfLife.resize(width, height);
   });
 
-  ipc.on("RESET", async (event, pattern) => {
+  ipc.on("RESET25", async (event, pattern) => {
     console.log("ipc receive : RESET");
 
     await gameOfLife.stop().then(() => console.log("finish reseting"));
@@ -56,5 +56,22 @@ module.exports = (ipc, gameOfLife) => {
   ipc.on("CANCEL", event => {
     console.log("ipc receive : CANCEL");
     event.returnValue = gameOfLife.cancel();
+  });
+
+  ipc.on("SAVE", async event => {
+    console.log("ipc receive : SAVE");
+    await gameOfLife.stop();
+    fileExplorer.save(gameOfLife.state.board);
+    event.returnValue = 1;
+  });
+
+  ipc.on("LOAD", event => {
+    console.log("ipc receive : LOAD");
+    gameOfLife
+      .stop()
+      .then(() => fileExplorer.load())
+      .then(pattern => gameOfLife.addPattern(pattern))
+      .then(res => (event.returnValue = { success: true, data: res }))
+      .catch(err => (event.returnValue = { success: false }));
   });
 };

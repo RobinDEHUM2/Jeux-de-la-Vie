@@ -14,13 +14,15 @@
       class="design-select"
       v-model="modelSelected"
       :options="modelOptions"
-      @change="resetBoard"
+      @input="resetBoard"
     ></vSelect>
     <h4>Actions :</h4>
     <button v-if="!editable" v-on:click="editBoard">edit</button>
     <button v-else v-on:click="cancelEdit">annuler</button>
     <button v-if="hasStarted" v-on:click="stopGame">stop</button>
     <button v-else v-on:click="startGame">start</button>
+    <button v-on:click="saveBoard">sauvegarder</button>
+    <button v-on:click="loadBoard">charger</button>
   </div>
 </template>
 
@@ -53,7 +55,9 @@ export default {
       "stop",
       "updateSpeed",
       "edit",
-      "cancel"
+      "cancel",
+      "save",
+      "load"
     ]),
 
     resizeWindow() {
@@ -82,6 +86,14 @@ export default {
 
     cancelEdit() {
       this.cancel();
+    },
+
+    saveBoard() {
+      this.save();
+    },
+
+    loadBoard() {
+      this.load();
     }
   }
 };

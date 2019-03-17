@@ -29,6 +29,12 @@ class GOLStore extends Store {
 
         EDIT_FALSE(state) {
           state.editable = false;
+        },
+
+        ADD_PATTERN(state, name) {
+          if (!state.modelOptions.includes(name)) {
+            state.modelOptions.push(name);
+          }
         }
       },
 
@@ -41,7 +47,7 @@ class GOLStore extends Store {
 
         reset({ commit }, model) {
           console.log("hellow world");
-          const newBoard = ipc.sendSync("RESET", model);
+          const newBoard = ipc.sendSync("RESET25", model);
 
           console.log("received message : ", newBoard);
           commit("STOP");
@@ -82,11 +88,22 @@ class GOLStore extends Store {
             console.log("ipc receive in front : CANCEL", newBoard);
             commit("CHANGE_BOARD", newBoard);
           }
+        },
+
+        save({ commit }) {
+          commit("STOP");
+          ipc.sendSync("SAVE");
+        },
+
+        load({ commit }) {
+          commit("STOP");
+          let res = ipc.sendSync("LOAD");
+
+          if (res.success) {
+            commit("CHANGE_BOARD", res.data.board);
+            commit("ADD_PATTERN", res.data.name);
+          }
         }
-        //
-        // save({ commit }) {},
-        //
-        // load({ commit }) {}
       }
     });
   }

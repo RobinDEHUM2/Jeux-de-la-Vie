@@ -7,10 +7,11 @@ const path = require("path");
 const controller = require("./controller");
 const golPatterns = require("../config/patterns.json");
 const GameOfLife = require("./GameOfLife");
-
-const gameOfLife = new GameOfLife(golPatterns);
+const FileExplorer = require("./FileExplorer");
 
 let win;
+const gameOfLife = new GameOfLife(golPatterns);
+const fileExplorer = new FileExplorer(win);
 
 function createWindow() {
   win = new BrowserWindow({
@@ -25,7 +26,7 @@ function createWindow() {
   });
 }
 
-controller(ipc, gameOfLife);
+controller(ipc, gameOfLife, fileExplorer);
 
 app.on("ready", createWindow);
 
