@@ -7,6 +7,7 @@
           v-for="(cell, cIndex) in line"
           :key="cIndex"
           v-bind:class="{ white: !cell, black: cell }"
+          @click="switchState(lIndex, cIndex)"
         ></td>
       </tr>
     </table>
@@ -14,11 +15,18 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 export default {
   name: "Board",
   computed: {
     ...mapState(["board"])
+  },
+  methods: {
+    ...mapActions(["updateBoard"]),
+
+    switchState(line, column) {
+      this.updateBoard({ line, column });
+    }
   }
 };
 </script>

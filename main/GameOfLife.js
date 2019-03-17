@@ -5,19 +5,28 @@
  * But I value unit testing more
  */
 module.exports = class GameOfLife {
-  constructor(board = [[]]) {
+  constructor(patterns) {
+    //I know it is a repetition from src/main
+    //but I don't see any elegant way to prevent it
+    if (!patterns.default || !patterns.default[0]) {
+      patterns.default = [[]];
+    }
+
     this.state = {
-      board: board,
+      board: patterns.default,
       running: false,
       stop: false,
-      speed: process.env.MAX_SPEED
+      speed: process.env.MAX_SPEED,
+      previousBoard: clone(patterns.default),
+      patterns
     };
 
-    this.onInterupt; //function(board)
+    this.onInterupt;
   }
 
-  init(board = [[]]) {
-    this.state.board = board;
+  init(patternName = "default") {
+    let newBoard = this.state.patterns[patternName];
+    this.state.board = newBoard ? newBoard : this.state.patterns.default;
 
     return this.state.board;
   }
@@ -27,6 +36,31 @@ module.exports = class GameOfLife {
     speed = typeof speed === "number" && speed > 0 ? speed : 1;
 
     this.state.speed = (process.env.MAX_SPEED * 100) / speed;
+  }
+
+  changeCell(line, column) {
+    if (!this.state.running) {
+      console.log("current board : ", this.state.board, line, column);
+      this.state.board[line][column] = this.state.board[line][column] ? 0 : 1;
+
+      return this.state.board;
+    }
+  }
+
+  startEdit() {
+    if (!this.state.running) {
+      this.state.previousBoard = clone(this.state.board);
+    }
+  }
+
+  cancel() {
+    if (!this.state.running) {
+      this.state.board = clone(this.state.previousBoard);
+
+      console.log("changed", this.state.board);
+
+      return this.state.board;
+    }
   }
 
   /**
@@ -67,11 +101,15 @@ module.exports = class GameOfLife {
    * stop the game
    * @param  {[type]} [onInterupt] callback triggered at the end
    */
-  stop(onInterupt) {
+  stop() {
     if (this.state.running) {
-      this.state.stop = true;
-      this.onInterupt = onInterupt;
+      return new Promise(resolve => {
+        this.onInterupt = resolve;
+        this.state.stop = true;
+      });
     }
+
+    return Promise.resolve();
   }
 
   resize(width, height) {
@@ -84,13 +122,7 @@ module.exports = class GameOfLife {
             line.length = width;
           });
         } else {
-          let start = this.state.board[0].length;
-          this.state.board.map(line => {
-            line.length = width;
-            line.fill(0, start, width);
-
-            return line;
-          });
+          this.state.board.map(line => enlargeArray(line, width, () => 0));
         }
       } else {
         if (width <= this.state.board[0].length) {
@@ -98,21 +130,11 @@ module.exports = class GameOfLife {
             line.length = width;
           });
         } else {
-          let start = this.state.board[0].length;
-          this.state.board.map(line => {
-            line.length = width;
-            line.fill(0, start, width);
-
-            return line;
-          });
+          this.state.board.map(line => enlargeArray(line, width, () => 0));
         }
 
-        let start = this.state.board.length;
-        this.state.board.length = height;
-        this.state.board.fill(
-          Array.from({ length: width }, () => 0),
-          start,
-          height
+        enlargeArray(this.state.board, height, () =>
+          Array.from({ length: width }, () => 0)
         );
       }
     } else {
@@ -216,4 +238,16 @@ function isNotEmpty(board) {
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function enlargeArray(line, width, filler) {
+  for (let i = line.length; i < width; i++) {
+    line.push(filler(i));
+  }
+
+  return line;
+}
+
+function clone(board) {
+  return board.map(line => line.map(cell => cell));
 }

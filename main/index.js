@@ -8,12 +8,15 @@ const controller = require("./controller");
 const golPatterns = require("../config/patterns.json");
 const GameOfLife = require("./GameOfLife");
 
-const gameOfLife = new GameOfLife([[]]);
+const gameOfLife = new GameOfLife(golPatterns);
 
 let win;
 
 function createWindow() {
-  win = new BrowserWindow({ width: 800, height: 1000 });
+  win = new BrowserWindow({
+    width: process.env.WINDOW_WIDTH,
+    height: process.env.WINDOW_HEIGHT
+  });
 
   win.loadFile(path.join(__dirname, "../dist/index.html"));
 
@@ -22,7 +25,7 @@ function createWindow() {
   });
 }
 
-controller(ipc, golPatterns, gameOfLife);
+controller(ipc, gameOfLife);
 
 app.on("ready", createWindow);
 

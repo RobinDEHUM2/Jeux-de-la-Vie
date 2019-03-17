@@ -17,6 +17,8 @@
       @change="resetBoard"
     ></vSelect>
     <h4>Actions :</h4>
+    <button v-if="!editable" v-on:click="editBoard">edit</button>
+    <button v-else v-on:click="cancelEdit">annuler</button>
     <button v-if="hasStarted" v-on:click="stopGame">stop</button>
     <button v-else v-on:click="startGame">start</button>
   </div>
@@ -35,18 +37,24 @@ export default {
     VueSlider
   },
   computed: {
-    ...mapState(["hasStarted", "modelOptions"])
+    ...mapState(["hasStarted", "modelOptions", "editable"])
   },
+  props: ["selectedSpeed", "selectedHeight", "selectedWidth"],
   data() {
     return {
-      modelSelected: null,
-      selectedSpeed: 100,
-      selectedHeight: 20,
-      selectedWidth: 20
+      modelSelected: "default"
     };
   },
   methods: {
-    ...mapActions(["resize", "reset", "start", "stop", "updateSpeed"]),
+    ...mapActions([
+      "resize",
+      "reset",
+      "start",
+      "stop",
+      "updateSpeed",
+      "edit",
+      "cancel"
+    ]),
 
     resizeWindow() {
       this.resize({ width: this.selectedWidth, height: this.selectedHeight });
@@ -66,6 +74,14 @@ export default {
 
     changeSpeed() {
       this.updateSpeed(this.selectedSpeed);
+    },
+
+    editBoard() {
+      this.edit();
+    },
+
+    cancelEdit() {
+      this.cancel();
     }
   }
 };

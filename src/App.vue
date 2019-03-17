@@ -1,7 +1,12 @@
 <template>
   <div id="app">
-    <SidePannel class="sidePannel" />
-    <Board class="mainBoard" v-bind:grid="grid" />
+    <SidePannel
+      class="sidePannel"
+      v-bind:selectedSpeed="selectedSpeed"
+      v-bind:selectedHeight="selectedHeight"
+      v-bind:selectedWidth="selectedWidth"
+    />
+    <Board class="mainBoard" />
   </div>
 </template>
 
@@ -11,7 +16,7 @@ import SidePannel from "./components/SidePannel.vue";
 
 export default {
   name: "app",
-  props: ["grid"],
+  props: ["selectedSpeed", "selectedHeight", "selectedWidth"],
   components: {
     Board,
     SidePannel
