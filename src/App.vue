@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <SidePannel class="sidePannel" />
-    <Board class="mainBoard" />
+    <Board class="mainBoard" v-bind:grid="grid" />
   </div>
 </template>
 
@@ -11,6 +11,7 @@ import SidePannel from "./components/SidePannel.vue";
 
 export default {
   name: "app",
+  props: ["grid"],
   components: {
     Board,
     SidePannel

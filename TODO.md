@@ -1,9 +1,5 @@
 ### A Faire
 
-- Un select pour choisir une configuration de départ (au minimum 2 possibles). Au clic sur un choix, on réinitialise la grille avec la configuration choisie ;
-- Un curseur permettant de régler la vitesse de simulation
-- Il doit être simple de rajouter des configurations de départ, simplement en relançant l'application, sans nécessairement toucher au code ;
-
 - La mise en place de tests d’intégration pour couvrir l'algorithme - lancés via npm test ;
 - La possibilité d’éditer la grille en cliquant sur les cellules ciblées ;
 - La possibilité d’exporter et d’importer des configurations de grilles sous forme de fichiers ;

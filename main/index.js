@@ -1,11 +1,11 @@
-const config = require("../config.json");
+const config = require("../config/config.json");
 process.env = { ...process.env, ...config };
 
 const { app, BrowserWindow, ipcMain: ipc } = require("electron");
 const path = require("path");
 
 const controller = require("./controller");
-const { golPatterns } = require("../golPatterns");
+const golPatterns = require("../config/patterns.json");
 const GameOfLife = require("./GameOfLife");
 
 const gameOfLife = new GameOfLife([[]]);
