@@ -22,7 +22,10 @@ function createWindow() {
   win.loadFile(path.join(__dirname, "../dist/index.html"));
 
   win.on("closed", () => {
-    win = null;
+    gameOfLife.stop().then(() => {
+      win = null;
+      app.quit();
+    });
   });
 }
 
@@ -33,7 +36,7 @@ app.on("ready", createWindow);
 // mac OS :
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
-    app.quit();
+    gameOfLife.stop().then(() => app.quit());
   }
 });
 
