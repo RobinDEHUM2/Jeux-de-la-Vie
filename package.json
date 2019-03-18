@@ -7,9 +7,9 @@
   "scripts": {
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "test:unit": "vue-cli-service test:unit",
     "start": "vue-cli-service build; electron .",
-    "electron": "electron ."
+    "electron": "electron .",
+    "test": "vue-cli-service test:unit"
   },
   "dependencies": {},
   "devDependencies": {
@@ -26,6 +26,7 @@
     "electron": "^4.1.0",
     "eslint": "^5.8.0",
     "eslint-plugin-vue": "^5.0.0",
+    "jest": "^24.5.0",
     "vue": "^2.6.9",
     "vue-select": "^2.6.0",
     "vue-slider-component": "^3.0.15",

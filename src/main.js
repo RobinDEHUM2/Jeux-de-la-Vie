@@ -17,12 +17,6 @@ if (!patterns.default || !patterns.default[0]) {
 
 const store = golStore(patterns, ipc);
 
-console.log(
-  config.DEFAULT_SPEED,
-  patterns.default.length,
-  patterns.default[0].length
-);
-
 new Vue({
   store,
   render: h =>

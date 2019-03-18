@@ -13,7 +13,7 @@ module.exports = class GameOfLife {
     }
 
     this.state = {
-      board: patterns.default,
+      board: patterns.default, // active board
       running: false,
       stop: false,
       speed: process.env.MAX_SPEED,
@@ -21,28 +21,40 @@ module.exports = class GameOfLife {
       patterns
     };
 
-    this.onInterupt;
+    this.onInterupt; // action to cast when the game get stopped
   }
 
+  /**
+   * choose a pattern in the list and reinitialise the board
+   * @param  {String} [patternName="default"] name of desired pattern
+   * @return {Array<Array<Integer>>}        current board
+   */
   init(patternName = "default") {
     let newBoard = this.state.patterns[patternName];
-    this.state.board = newBoard ? newBoard : this.state.patterns.default;
+    this.state.board = clone(newBoard ? newBoard : this.state.patterns.default);
 
     return this.state.board;
   }
 
+  /**
+   * add a pattern to the list
+   * @param {Object{name:Integer, board:Array<Array<Integer>>}} pattern to be added
+   * @return {Object{name:Integer, board:Array<Array<Integer>>}}
+   */
   addPattern(pattern) {
-    if (!this.state.running || !pattern.board || !pattern.board[0]) {
+    if (!this.state.running && pattern && pattern.board && pattern.board[0]) {
       this.state.board = pattern.board;
       this.resize(this.state.board[0].length, this.state.board.length); //to make sure board is rectangular
-      this.state.patterns[pattern.name] = this.state.board;
-      console.log("pattern added");
+      this.state.patterns[pattern.name] = clone(this.state.board);
 
       return { name: pattern.name, board: this.state.board };
     }
     throw "not a valid pattern";
   }
 
+  /**
+   * @param  {Integer[1:100]} speed
+   */
   changeSpeed(speed) {
     //just to make sure it can always work
     speed = typeof speed === "number" && speed > 0 ? speed : 1;
@@ -50,26 +62,42 @@ module.exports = class GameOfLife {
     this.state.speed = (process.env.MAX_SPEED * 100) / speed;
   }
 
+  /**
+   * switch the state of a selected cell
+   * @param  {Integer} line   line index
+   * @param  {Integer} column column index
+   * @return {Array<Array<Integer>>}        current board
+   */
   changeCell(line, column) {
-    if (!this.state.running) {
-      console.log("current board : ", this.state.board, line, column);
+    if (
+      !this.state.running &&
+      line >= 0 &&
+      column >= 0 &&
+      line < this.state.board.length &&
+      column < this.state.board[0].length
+    ) {
       this.state.board[line][column] = this.state.board[line][column] ? 0 : 1;
 
       return this.state.board;
     }
   }
 
+  /**
+   * save the board before edition (so changes can be cancel)
+   */
   startEdit() {
     if (!this.state.running) {
       this.state.previousBoard = clone(this.state.board);
     }
   }
 
+  /**
+   * undo any changes to the board
+   * @return {Array<Array<Integer>>}        current board
+   */
   cancel() {
     if (!this.state.running) {
       this.state.board = clone(this.state.previousBoard);
-
-      console.log("changed", this.state.board);
 
       return this.state.board;
     }
@@ -77,9 +105,7 @@ module.exports = class GameOfLife {
 
   /**
    * run newCycle until maxCyclesis reached or runing state is turned off
-   * @param  {Array<Array<Integer>>} board
    * @param  {Function(Array<Array<Integer>>)} [onCycleEnd] callback triggered at the end of each cycle
-   * @param  {Integer} [maxCycles]  maximum number of cycle allowed, if lower or equal to 0 ignored, app will run until
    * @param  {Function(Array<Array<Integer>>)} [onEnd]   callback triggered at the end
    */
   start(onCycleEnd) {
@@ -90,28 +116,36 @@ module.exports = class GameOfLife {
     }
   }
 
+  /**
+   * @param  {Function(Array<Array<Integer>>)} [onCycleEnd] callback triggered at the end of each cycle
+   */
   run(onCycleEnd) {
-    if (!this.state.stop) {
-      this.state.board = this.newCycle(this.state.board);
+    if (this.state.stop) {
+      //check if the app should stop
 
-      if (onCycleEnd) {
-        onCycleEnd(this.state.board);
-      }
-
-      setTimeout(this.run.bind(this), this.state.speed, onCycleEnd);
-    } else {
       this.state.running = false;
       this.state.stop = false;
 
       if (this.onInterupt) {
+        //trigger onInterrupt if it exists, let stop know cycle has finished
         this.onInterupt(this.state.board);
       }
+    } else {
+      this.state.board = this.newCycle(this.state.board); //next step
+
+      if (onCycleEnd) {
+        //trigger cyclic callback
+        onCycleEnd(this.state.board);
+      }
+
+      setTimeout(this.run.bind(this), this.state.speed, onCycleEnd);
+      //wait for next cycle
     }
   }
 
   /**
    * stop the game
-   * @param  {[type]} [onInterupt] callback triggered at the end
+   * @return {Promise} resolve when app is ready
    */
   stop() {
     if (this.state.running) {
@@ -124,6 +158,12 @@ module.exports = class GameOfLife {
     return Promise.resolve();
   }
 
+  /**
+   * change the shape of the double array
+   * @param  {Integer} width
+   * @param  {Integer} height
+   * @return {Array<Array<Integer>>}        current board
+   */
   resize(width, height) {
     if (width > 0 && height > 0) {
       if (height <= this.state.board.length) {
@@ -239,6 +279,8 @@ module.exports = class GameOfLife {
   }
 };
 
+//private
+
 /**
  * check if board is valid, not necessarily useful but I hate repeting myself
  * @param  {Array<Array<Integer>>} board
@@ -248,10 +290,13 @@ function isNotEmpty(board) {
   return board.length > 0 && board[0].length > 0;
 }
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
+/**
+ * change the size of an array to a bigger array
+ * @param  {Array} line   Array to be modified
+ * @param  {Integer} width  desired width
+ * @param  {function(id)} filler fill each cell with this function
+ * @return {Array} modified array
+ */
 function enlargeArray(line, width, filler) {
   for (let i = line.length; i < width; i++) {
     line.push(filler(i));
@@ -260,6 +305,12 @@ function enlargeArray(line, width, filler) {
   return line;
 }
 
+/**
+ * @param  {Array<Array<Integer>>} board to be copied
+ * @return {Array<Array<Integer>>}       copy
+ */
 function clone(board) {
   return board.map(line => line.map(cell => cell));
 }
+
+// sorry for the long post have an abstract potato

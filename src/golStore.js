@@ -4,9 +4,9 @@ class GOLStore extends Store {
   constructor(patterns, ipc) {
     super({
       state: {
-        board: patterns.default,
+        board: patterns.default, // current board
         hasStarted: false,
-        modelOptions: Object.keys(patterns),
+        modelOptions: Object.keys(patterns), // pattern names
         editable: false
       },
 
@@ -46,10 +46,8 @@ class GOLStore extends Store {
         },
 
         reset({ commit }, model) {
-          console.log("hellow world");
-          const newBoard = ipc.sendSync("RESET25", model);
+          const newBoard = ipc.sendSync("RESET", model);
 
-          console.log("received message : ", newBoard);
           commit("STOP");
           commit("CHANGE_BOARD", newBoard);
         },
@@ -85,7 +83,6 @@ class GOLStore extends Store {
         cancel({ commit, state }) {
           if (state.editable) {
             const newBoard = ipc.sendSync("CANCEL");
-            console.log("ipc receive in front : CANCEL", newBoard);
             commit("CHANGE_BOARD", newBoard);
           }
         },

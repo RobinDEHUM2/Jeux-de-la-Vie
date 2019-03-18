@@ -1,9 +1,16 @@
 const { dialog } = require("electron");
 const fs = require("fs");
 
+/**
+ * Directory accesses
+ */
 module.exports = class FileExplorer {
   constructor() {}
 
+  /**
+   * Access directory and save a board in a file
+   * @param  {Array<Array<Integer>>} board board to save in a file
+   */
   save(board) {
     let fileName = dialog.showSaveDialog({ defaultPath: "./savedFiles" });
 
@@ -31,12 +38,14 @@ module.exports = class FileExplorer {
             }
           );
         }
-
-        console.log("file saved");
       });
     }
   }
 
+  /**
+   * Access directory and load selected file
+   * @return {Promise<{name, board}>} return the name of the file and its content
+   */
   load() {
     return new Promise(resolve =>
       dialog.showOpenDialog(

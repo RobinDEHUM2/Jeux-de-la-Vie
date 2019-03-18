@@ -1,13 +1,7 @@
 ### A Faire
 
 - La mise en place de tests d’intégration pour couvrir l'algorithme - lancés via npm test ;
-- La possibilité d’éditer la grille en cliquant sur les cellules ciblées ;
-- La possibilité d’exporter et d’importer des configurations de grilles sous forme de fichiers ;
 - Toute autre option qui vous semble intéressant d’ajouter
-
-### Fait
-
-- La mise en place d’un linter pour la revue de code, lancé via npm lint ;
 
 ### Requis
 
